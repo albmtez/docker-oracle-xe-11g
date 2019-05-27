@@ -164,6 +164,26 @@ EOF"
   moveFiles;
 }
 
+########## Create Schemas ##############
+function createSchemas() {
+  if [ "$SCHEMAS" == "" ]; then
+			echo "If you want to create DBs automatically specify SCHEMAS environment variable";
+		else
+			for db in ${SCHEMAS} ; do
+				if [ -f "/db.${db}" ];
+				then
+					echo "User ${db} already exists"
+				else
+					echo "Is about to create schema: $db"
+					cp $ORACLE_BASE/scripts/template.schema.sql $ORACLE_BASE/scripts/$db.schema.sql
+					sed -i -E "s/TEMPLATE_USER/$db/g" $ORACLE_BASE/scripts/$db.schema.sql
+					sqlplus -S system/$ORACLE_PWD@localhost @$ORACLE_BASE/scripts/$db.schema.sql
+					touch "/db.${db}"
+				fi
+			done
+		fi
+}
+
 ############# MAIN ################
 
 # Set SIGTERM handler
@@ -204,6 +224,8 @@ if [ $? -eq 0 ]; then
   echo "#########################"
   echo "DATABASE IS READY TO USE!"
   echo "#########################"
+
+  createSchemas
 
   # Execute custom provided startup scripts
   runUserScripts $ORACLE_BASE/scripts/startup

@@ -11,12 +11,13 @@ ENV ORACLE_BASE=/u01/app/oracle \
     CONFIG_RSP="xe.rsp" \
     RUN_FILE="runOracle.sh" \
     PWD_FILE="setPassword.sh" \
-    CHECK_DB_FILE="checkDBStatus.sh"
+    CHECK_DB_FILE="checkDBStatus.sh" \
+    TEMPLATE_SCHEMA="template.schema.sql"
 
 # Use of a separated ENV in order to have the variables substituted.
 ENV PATH=$ORACLE_HOME/bin:$PATH
 
-COPY $INSTALL_FILE $CONFIG_RSP $RUN_FILE $PWD_FILE $CHECK_DB_FILE $INSTALL_DIR/
+COPY $INSTALL_FILE $CONFIG_RSP $RUN_FILE $PWD_FILE $CHECK_DB_FILE $TEMPLATE_SCHEMA $INSTALL_DIR/
 
 # Oracle XE install.
 # Swap space pre-requisite is suited by moking the free command result.
@@ -39,6 +40,7 @@ RUN yum -y install unzip libaio bc initscripts net-tools openssl compat-libstdc+
     mv $INSTALL_DIR/$RUN_FILE $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$PWD_FILE $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$CHECK_DB_FILE $ORACLE_BASE/ && \
+    mv $TEMPLATE_SCHEMA $ORACLE_BASE/scripts && \
     ln -s $ORACLE_BASE/$PWD_FILE / && \
     cd $HOME && \
     rm -rf $INSTALL_DIR && \
@@ -49,4 +51,4 @@ EXPOSE 1521 8080
 HEALTHCHECK --interval=1m --start-period=5m \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
-CMD [ "exec", "$ORACLE_BASE/$RUN_FILE" ]
+CMD exec $ORACLE_BASE/$RUN_FILE

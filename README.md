@@ -56,8 +56,19 @@ You can customize these values and the grants editing the file *template.schema.
 
 ## Data persisted on container recreation
 
+In order to have your database files persisted, you can mount the container volume */u01/app/oracle/oradata* in a host directory.
+
+```
+docker run -d --name oracle-xe --shm-size=1g -p 1521:1521 -p 8080:8080 -v[<host mount point>:]/u01/app/oracle/oradata -e ORACLE_PWD=oracle oracle-xe-11g
+```
+
 ## Custom scripts execution
 
+It's possible to execute custom scripts (shellscript and/or sql files) on database startup. The files to be executed must be stored in a directory in the host and map this directory to the volume */u01/app/oracle/scripts/startup* in the container.
+
+```
+docker run -d --name oracle-xe --shm-size=1g -p 1521:1521 -p 8080:8080 -v /Users/alberto.martinez/data/scripts:/u01/app/oracle/scripts/startup -e ORACLE_PWD=oracle oracle-xe-11g
+```
 ## Database management
 
 You can connect to the Oracle Application Express web management console with the following settings:
@@ -66,11 +77,13 @@ You can connect to the Oracle Application Express web management console with th
 url: http://localhost:8080/apex
 workspace: INTERNAL
 user: ADMIN
-password: oracle
+password: <ORACLE_PWD>
 ```
 
 Using sqlplus:
 
 ```
 docker exec -it oracle-xe sqlplus sys/<ORACLE_PWD>@localhost:1521/XE as sysdba
+docker exec -it oracle-xe sqlplus system/<ORACLE_PWD>@localhost:1521/XE as sysdba
+docker exec -it oracle-xe sqlplus pdbadmin/<ORACLE_PWD>@localhost:1521/XEPDB1 as sysdba
 ```
