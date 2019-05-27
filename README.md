@@ -7,16 +7,19 @@ https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstanc
 ## Build image and run container
 
 Oracle XE 11g installer file is splitted in directory *orainstaller*. Before building the image you must recompose the file:
+
 ```
 ./generateInstaller.sh
 ```
 
 You can now build the image executing the following command:
+
 ```
 docker build -t oracle-xe-11g .
 ```
 
 To run a contanier:
+
 ```
 docker run -d --name oracle-xe --shm-size=1g -p 1521:1521 -p 8080:8080 -e ORACLE_PWD=oracle oracle-xe-11g
 ````
@@ -42,6 +45,7 @@ docker run -d --name oracle-xe --shm-size=1g -p 1521:1521 -p 8080:8080 -e ORACLE
 Custom database schemas can be created on database initialization by specifying the names in the environment variable **SCHEMAS**. If no name is specified or the environment variable is not set, no schema will be created.
 
 Example:
+
 ```
 docker run -d --name oracle-xe --shm-size=1g -p 1521:1521 -p 8080:8080 -e ORACLE_PWD=oracle -SCHEMAS="EYSD KUSU KFUL" oracle-xe-11g
 ```
@@ -57,6 +61,7 @@ You can customize these values and the grants editing the file *template.schema.
 ## Database management
 
 You can connect to the Oracle Application Express web management console with the following settings:
+
 ```
 url: http://localhost:8080/apex
 workspace: INTERNAL
@@ -65,6 +70,7 @@ password: oracle
 ```
 
 Using sqlplus:
+
 ```
 docker exec -it oracle-xe sqlplus sys/<ORACLE_PWD>@localhost:1521/XE as sysdba
 ```
