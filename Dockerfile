@@ -1,6 +1,6 @@
 FROM oraclelinux:7-slim
 
-MAINTAINER Alberto Martinez
+LABEL maintiner="Alberto Martinez"
 
 # Environment variables needed for building the image.
 ENV ORACLE_BASE=/u01/app/oracle \
